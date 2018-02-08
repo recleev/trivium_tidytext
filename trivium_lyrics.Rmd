@@ -6,6 +6,8 @@ output:
     theme: "sandstone"
     code_folding: "hide"
     highlight: "zenburn"
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 # A View of Mining Lyrics
