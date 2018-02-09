@@ -151,7 +151,7 @@ apostrophe <- paste(c("'" %R% one_or_more(ALPHA),
 
 One important part of `tidytext` is the `stop_words` data frame. It contains 1149 stop words from three lexicons. I used the SMART lexicon because it contained the most number of stop words.
 
-One annoying thing I discovered is that lyrics from Genius contains curly apostrophes "’". R detects curly and straight apostrophes differently. Since the `stop_words` data frame contains straight apostrophes only, I had to manually remove curly and straight apostrophes from the text. I checked beforehand, so I know I am only removing apostrophes and letters after it in contractions and possessives.
+One annoying thing I discovered is that lyrics from Genius contains curly apostrophes. R detects curly and straight apostrophes differently. Since the `stop_words` data frame contains straight apostrophes only, I had to manually remove curly and straight apostrophes from the text. I checked beforehand, so I know I am only removing apostrophes and letters after it in contractions and possessives.
 
 ```{r clean trivium lyrics}
 clean_trivium_lyrics <- 
