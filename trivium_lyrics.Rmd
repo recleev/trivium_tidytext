@@ -1,14 +1,17 @@
 ---
 title: 'The Crusade: Text Mining Trivium Songs'
 author: "Recle Etino Vibal"
-output: 
+output:
+  html_document:
+    code_folding: hide
+    highlight: zenburn
+    theme: sandstone
+    toc: yes
+    toc_float: yes
   github_document:
-  # html_document:
-  #   theme: "sandstone"
-  #   code_folding: "hide"
-  #   highlight: "zenburn"
-    toc: TRUE
-    # toc_float: TRUE
+    toc: yes
+  pdf_document:
+    toc: yes
 ---
 
 # A View of Mining Lyrics
