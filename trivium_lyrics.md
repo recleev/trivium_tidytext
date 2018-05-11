@@ -20,7 +20,7 @@ Trivium is my favorite heavy metal band. They also did a wonderful cover of *Mas
 
 I found [this article](https://www.r-bloggers.com/hardwired-for-tidy-text/) by [HighlandR](https://www.r-bloggers.com/author/highlandr/) on the tidy text analysis of Metallica albums. I really enjoyed it, and it also introduced me to the [`tidytext`](https://cran.r-project.org/web/packages/tidytext/index.html) package and text mining.
 
-With my new found passion with R and my fondness of Trivium, I decided to do a tidy text analysis of Trivium song lyrics
+With my new found passion with R and my fondness of Trivium, I decided to do a tidy text analysis of Trivium song lyrics.
 
 ``` r
 library(knitr)
@@ -32,6 +32,7 @@ library(drlib)
 library(wordcloud)
 library(extrafont)
 library(scales)
+library(tinytex)
 
 opts_chunk$set(message = FALSE,
                warning = FALSE,
@@ -41,7 +42,7 @@ opts_chunk$set(message = FALSE,
 Into the Mouth of R We March
 ============================
 
-A few words on the libraries I used here.
+A few words on the packages I used here.
 
 `tidyverse` and `knitr` are my most used packages. I use `rebus` so I can avoid regex. `rebus` requires more typing, but it is more intuitive when you want to attacks strings, like song titles and lyrics. I used `wordcloud` to make a wordcloud and `extrafont` to change the default fonts in my plots.
 
@@ -264,7 +265,7 @@ clean_trivium_lyrics %>%
   theme_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/most words per album-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/most_words_per_album-1.png" style="display: block; margin: auto;" />
 
 The first three albums had almost the same number of words. Trivium went crazy with the lyrics in Shogun. This is not surprising for an album that features a lot Greek mythology. Trivium toned down the lyrics after Shogun and really took a dip in word count in Silence in the Snow. I think this has something to do with Matt Heafy's change in vocal style. I think the decreased lyrics allowed Matt to relax his vocal cords a little. Fortunately, there is a resurgence in the number of lyrics, but it has not returned to pre-Shogun days.
 
@@ -285,7 +286,7 @@ clean_trivium_lyrics %>%
   theme_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/most unique words per album-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/most_unique_words_per_album-1.png" style="display: block; margin: auto;" />
 
 We almost got the same story, but The Crusade and Vengeance Falls also stands out with the number of unique words. Shogun again takes first because of its reference to a lot of Greek mythology. The Crusade is my favorite album and with its reference to a lot of famous killings, I am not surprised it takes second place in unique words. Vengeance is a bit surprising I would have expected In Waves or Ascendancy to be third, but come to think of it, Vengeance is less repetitive than Waves or Ascendancy.
 
@@ -310,7 +311,7 @@ clean_trivium_lyrics %>%
   scale_fill_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/most common word-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/most_common_words-1.png" style="display: block; margin: auto;" />
 
 What are the most common words in each album?
 
@@ -336,7 +337,7 @@ clean_trivium_lyrics %>%
   scale_fill_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/common words per album-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/common_words_per_album-1.png" style="display: block; margin: auto;" />
 
 Nothing much to interpret here. It is just nice to see what words are most frequently used. Trivium seems concerned much with World and life more often as both words are quite common across multiple albums. It seems like Trivium shifted focus from a single plane of a world to a multiverse of worlds in The Sin and the Sentence, but the popularity of worlds in this album is mainly because of one song.
 
@@ -370,7 +371,7 @@ clean_trivium_lyrics %>%
   scale_fill_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/lyrics tf-idf-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/lyrics_tfidf-1.png" style="display: block; margin: auto;" />
 
 I am not sure how to interpret this, but it seems that after Shogun, Trivium is starting to focus on specific words or themes for each album. A topic model would be helpful to verify this, but that can wait for another post.
 
@@ -419,7 +420,7 @@ trivium_bing %>%
 | burning | negative  |   26|
 | broken  | negative  |   25|
 
-First, I will look into the [Bing](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) lexicon. Note that while the Bing lexicon categorizes 6788 words into negative and positive sentiments, only 2704 lyrics out of 9848 were categorized.
+First, I will look into the [Bing](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) lexicon. Note that while the Bing lexicon categorizes 6788 words into negative and positive sentiments, only 2707 lyrics out of 9864 were categorized.
 
 ``` r
 trivium_bing %>% 
@@ -446,7 +447,7 @@ trivium_bing %>%
                                "darkred"))
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/proportion positive negative-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/proportion_positive_negative-1.png" style="display: block; margin: auto;" />
 
 Trivium is consistent in using more negative words than positive, not surprising for a heavy metal band.
 
@@ -489,7 +490,7 @@ trivium_afinn %>%
 | If I Could Collapse The Masses |         3| <https://genius.com/Trivium-if-i-could-collapse-the-masses-lyrics> | Ember to Inferno | If I Could Collapse The Masses |    22| swear    | AFINN   |     -2|
 | If I Could Collapse The Masses |         3| <https://genius.com/Trivium-if-i-could-collapse-the-masses-lyrics> | Ember to Inferno | If I Could Collapse The Masses |    23| battle   | AFINN   |     -1|
 
-The [AFINN](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010) lexicon in the `sentiments` data frame gives integer sentiment scores from -5 to +5 for 2476 words. Note again that AFINN scored only 2261 words out of 9848 Trivium lyrics.
+The [AFINN](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010) lexicon in the `sentiments` data frame gives integer sentiment scores from -5 to +5 for 2476 words. Note again that AFINN scored only 2261 words out of 9864 Trivium lyrics.
 
 ``` r
 trivium_afinn %>% 
@@ -507,7 +508,7 @@ trivium_afinn %>%
   theme_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/afinn scores album-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/afinn_scores_album-1.png" style="display: block; margin: auto;" />
 
 Again this much negative sentiment score is not unexpected in a heavy metal band. Shogun takes first again because of its word count.
 
@@ -529,7 +530,7 @@ trivium_afinn %>%
   theme_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/mean afinn scores album-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/mean_afinn_scores_album-1.png" style="display: block; margin: auto;" />
 
 Shogun still takes the lead, but Sin is a close second.
 
@@ -559,7 +560,7 @@ trivium_afinn %>%
   scale_fill_trivium()
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/afinn negative trivium songs-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/afinn_negative_trivium_songs-1.png" style="display: block; margin: auto;" />
 
 One can actually feel the negative words already just from the song titles.
 
@@ -583,4 +584,4 @@ trivium_bing %>%
                  fixed.asp = FALSE))
 ```
 
-<img src="trivium_lyrics_files/figure-markdown_github/trivium lyrics wordcloud-1.png" style="display: block; margin: auto;" />
+<img src="trivium_lyrics_files/figure-markdown_github/trivium_lyrics_wordcloud-1.png" style="display: block; margin: auto;" />

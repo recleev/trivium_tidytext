@@ -8,9 +8,9 @@ output:
     theme: sandstone
     toc: yes
     toc_float: yes
-  github_document:
-    toc: yes
   pdf_document:
+    toc: yes
+  github_document:
     toc: yes
 ---
 
@@ -20,9 +20,9 @@ Trivium is my favorite heavy metal band. They also did a wonderful cover of *Mas
 
 I found [this article](https://www.r-bloggers.com/hardwired-for-tidy-text/) by [HighlandR](https://www.r-bloggers.com/author/highlandr/) on the tidy text analysis of Metallica albums. I really enjoyed it, and it also introduced me to the [`tidytext`](https://cran.r-project.org/web/packages/tidytext/index.html) package and text mining.
 
-With my new found passion with R and my fondness of Trivium, I decided to do a tidy text analysis of Trivium song lyrics
+With my new found passion with R and my fondness of Trivium, I decided to do a tidy text analysis of Trivium song lyrics.
 
-```{r setup libraries, message=FALSE}
+```{r setup_libraries, message=FALSE}
 
 library(knitr)
 library(tidyverse)
@@ -33,6 +33,7 @@ library(drlib)
 library(wordcloud)
 library(extrafont)
 library(scales)
+library(tinytex)
 
 opts_chunk$set(message = FALSE,
                warning = FALSE,
@@ -42,7 +43,7 @@ opts_chunk$set(message = FALSE,
 
 # Into the Mouth of R We March
 
-A few words on the libraries I used here.
+A few words on the packages I used here.
 
 `tidyverse` and `knitr` are my most used packages. I use `rebus` so I can avoid regex. `rebus` requires more typing, but it is more intuitive when you want to attacks strings, like song titles and lyrics. I used `wordcloud` to make a wordcloud and `extrafont` to change the default fonts in my plots.
 
@@ -56,7 +57,7 @@ One thing I learned from HighlandR's post is the existence of the [`geniusR`](ht
 
 The first problem I encountered with downloading all Trivium albums is that Snøfall, an instrumental track at the beginning of Silence in the Snow, results to an error. The reason behind this is the presence of the special character "ø" in the title and it's absence in the url (https://genius.com/Trivium-snfall-lyrics).
 
-```{r snøfall problem, message=TRUE, error=TRUE, cache=TRUE}
+```{r snøfall_problem, message=TRUE, error=TRUE, cache=TRUE}
 
 # Get Silence in the Snow Album -------------------------------------------
 
@@ -67,7 +68,7 @@ genius_album("Trivium",
 
 Since Snøfall is an instrumental track, I decided to get the tracklist of Silence in the Snow first using `genius_tracklist()`, then filter out Snøfall before downloading the lyrics with `genius_lyrics()` and the help of `map()` from the `purrr` package.
 
-```{r silence success, cache=TRUE}
+```{r silence_success, cache=TRUE}
 
 genius_tracklist("Trivium",
                    "Silence in the snow") %>% 
@@ -84,7 +85,7 @@ genius_tracklist("Trivium",
 
 What I did here is similar to how `genius_album()` works. We get a tibble with each song divided into verse lines. I included an album column so I know what album the tracks are from. I used this as a template to create the `get_trivium_album()` function that allowed me to download all lyrics at once in tidy format. I used `map()` again to accomplish this.
 
-```{r get trivium album, cache=TRUE}
+```{r get_trivium_album, cache=TRUE}
 
 trivium_albums <- 
   c("Ember to Inferno",
@@ -121,7 +122,7 @@ trivium <-
 
 Prior to this, I tested each album to make sure I will not encounter the same problem with Silence. I still included `possibly()` as an added safety feature then drop all `NA` rows, if any, with `drop_na()`.
 
-```{r filter covers}
+```{r remove_covers}
 
 trivium_covers <- paste(c("Master Of Puppets", 
                           "Iron Maiden", 
@@ -142,7 +143,7 @@ After downloading all the Trivium albums, I still had to remove the cover songs 
 
 The tibble `geniusR` gives is not yet very useful, so I had to make some cleaning like removing stop words.
 
-```{r SMART stopwords}
+```{r SMART_stopwords}
 
 SMART_stop_words <- 
   stop_words %>% 
@@ -158,7 +159,7 @@ One important part of `tidytext` is the `stop_words` data frame. It contains 114
 
 One annoying thing I discovered is that lyrics from Genius contains curly apostrophes. R detects curly and straight apostrophes differently. Since the `stop_words` data frame contains straight apostrophes only, I had to manually remove curly and straight apostrophes from the text. I checked beforehand, so I know I am only removing apostrophes and letters after it in contractions and possessives.
 
-```{r clean trivium lyrics}
+```{r clean_trivium_lyrics}
 clean_trivium_lyrics <- 
   trivium %>% 
   mutate(text = str_replace_all(text,
@@ -180,7 +181,7 @@ Trivium lyrics gathered. Trivium lyrics cleaned. Time to make sense and visualiz
 
 During my preliminaries, I discovered I used some code multiple times. I believe in [David Robinson's advice](https://twitter.com/drob/status/928447584712253440), so I made some of this code into functions, or at least the ones I could. I also made color palette for Trivium inspired by the album covers.
 
-```{r trivium palette functions}
+```{r trivium_palette_functions}
 
 trivium_palette <- c("yellow2", # Ember
                      "orange2", # Ascendancy
@@ -231,7 +232,7 @@ facet_trivium_albums <- function(album, trivium_albums, ...) {
 
 One thing I wanted to know was which album had the most words, both in count and unique.
 
-```{r most words per album, fig.height=5,fig.width=8}
+```{r most_words_per_album, fig.height=5,fig.width=8}
 clean_trivium_lyrics %>% 
   count(album) %>% 
   ggplot(aes(factor(album,
@@ -250,7 +251,7 @@ The first three albums had almost the same number of words. Trivium went crazy w
 
 These are absolute count of words. I also wanted to see how many unique words (a measure of creativity maybe) an album contains.
 
-```{r most unique words per album, fig.height=5,fig.width=8}
+```{r most_unique_words_per_album, fig.height=5,fig.width=8}
 
 clean_trivium_lyrics %>% 
   group_by(album) %>% 
@@ -273,7 +274,7 @@ We almost got the same story, but The Crusade and Vengeance Falls also stands ou
 
 What is Trivium's most used word?
 
-```{r most common word}
+```{r most_common_words}
 
 clean_trivium_lyrics %>% 
   count(lyrics, sort = TRUE) %>%
@@ -293,7 +294,7 @@ clean_trivium_lyrics %>%
 
 What are the most common words in each album?
 
-```{r common words per album}
+```{r common_words_per_album}
 
 clean_trivium_lyrics %>% 
   count(album, lyrics, sort = TRUE) %>%
@@ -323,7 +324,7 @@ Nothing much to interpret here. It is just nice to see what words are most frequ
 
 I also wanted to know how what words are important to each album. The [term frequency-inverse document frequency](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) or tf-idf helped me to determine these words. The `tidytext` package also has the `bind_tf_idf()` that makes tf-idf analysis quick and easy. I am still new to tf-idf, but this is how I understand it: we will give points to a word every time it appears in an album, but we will also deduct points to it if it appears in other albums. In the end, the words with the biggest tf-idf are the most important or tied to an album.
 
-```{r lyrics tf-idf}
+```{r lyrics_tfidf}
 
 clean_trivium_lyrics %>% 
   count(album, lyrics) %>% 
@@ -355,7 +356,7 @@ I am not sure how to interpret this, but it seems that after Shogun, Trivium is 
 
 Another nice feature of `tidytext` is that it allows for sentiment analysis with the `sentiments` data frame. It contains four lexicons that associates a word with a sentiment or a score.
 
-```{r trivium bing}
+```{r trivium_bing}
 
 bing <- 
   sentiments %>% 
@@ -376,7 +377,7 @@ trivium_bing %>%
 
 First, I will look into the [Bing](https://www.cs.uic.edu/~liub/FBS/sentiment-analysis.html) lexicon. Note that while the Bing lexicon categorizes `r bing %>% distinct(words) %>% nrow()` words into negative and positive sentiments, only `r trivium_bing %>% nrow()` lyrics out of `r clean_trivium_lyrics %>% nrow()` were categorized.
 
-```{r proportion positive negative}
+```{r proportion_positive_negative}
 
 trivium_bing %>% 
   count(album,
@@ -405,7 +406,7 @@ trivium_bing %>%
 
 Trivium is consistent in using more negative words than positive, not surprising for a heavy metal band.
 
-```{r trivium afinn}
+```{r trivium_afinn}
 afinn <- 
   sentiments %>% 
   filter(lexicon == "AFINN") %>% 
@@ -423,7 +424,7 @@ trivium_afinn %>%
 
 The [AFINN ](http://www2.imm.dtu.dk/pubdb/views/publication_details.php?id=6010) lexicon in the `sentiments` data frame gives integer sentiment scores from -5 to +5 for `r afinn %>% nrow()` words. Note again that AFINN scored only `r trivium_afinn %>% nrow()` words out of `r clean_trivium_lyrics %>% nrow()` Trivium lyrics.
 
-```{r afinn scores album}
+```{r afinn_scores_album}
 
 trivium_afinn %>% 
   group_by(album) %>% 
@@ -445,7 +446,7 @@ Again this much negative sentiment score is not unexpected in a heavy metal band
 
 Shogun has the most word count, so Shogun's big negative score might be misleading. I looked at the mean AFINN scores next.
 
-```{r mean afinn scores album}
+```{r mean_afinn_scores_album}
 
 trivium_afinn %>% 
   group_by(album) %>% 
@@ -467,7 +468,7 @@ Shogun still takes the lead, but Sin is a close second.
 
 How about songs? What Trivium songs are the most negative per album?
 
-```{r afinn negative trivium songs}
+```{r afinn_negative_trivium_songs}
 
 trivium_afinn %>% 
   group_by(album, title) %>%
@@ -499,7 +500,7 @@ One can actually feel the negative words already just from the song titles.
 
 As a parting image, let's go back to the Bing lexicon and see what negative and positive words appear most frequently in Trivium songs.
 
-```{r trivium lyrics wordcloud}
+```{r trivium_lyrics_wordcloud}
 
 par(bg = "black")
 trivium_bing %>% 
